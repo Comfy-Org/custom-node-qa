@@ -1,16 +1,16 @@
 /**
- * ComfyUI QA DevTools - paste into console
- * QA.listPacks() | QA.testPack("comfyui-impact-pack") | QA.help()
+ * Copy/paste this entire file into browser devtools console.
+ * Then: QA.listPacks() | QA.testPack("comfyui-impact-pack") | QA.help()
  */
 const QA = {
   _defs: null,
   _byMod: null,
 
   _normalizeMod(mod) {
-    if (mod.startsWith("comfy_extras.")) return "comfy_extras"
-    if (mod.startsWith("comfy_api_nodes.")) return "comfy_api_nodes"
-    if (mod.startsWith("custom_nodes.")) return mod.replace("custom_nodes.", "")
-    if (mod === "nodes") return "core"
+    if (mod.startsWith('comfy_extras.')) return 'comfy_extras'
+    if (mod.startsWith('comfy_api_nodes.')) return 'comfy_api_nodes'
+    if (mod.startsWith('custom_nodes.')) return mod.replace('custom_nodes.', '')
+    if (mod === 'nodes') return 'core'
     return mod
   },
 
@@ -19,7 +19,7 @@ const QA = {
       this._defs = await app.getNodeDefs()
       this._byMod = {}
       for (const [name, def] of Object.entries(this._defs)) {
-        const mod = this._normalizeMod(def.python_module || "core")
+        const mod = this._normalizeMod(def.python_module || 'core')
         ;(this._byMod[mod] ??= []).push({ name, ...def })
       }
     }
@@ -34,23 +34,25 @@ const QA = {
 
   async checklist(filename = 'checklist.md') {
     await this._init()
-    const lines = Object.keys(this._byMod).sort().map(mod =>
-      `- [ ] ${mod} (${this._byMod[mod].length})`
-    )
-    const md = "# Node Pack QA Checklist\n\n" + lines.join("\n")
+    const lines = Object.keys(this._byMod)
+      .sort()
+      .map((mod) => `- [ ] ${mod} (${this._byMod[mod].length})`)
+    const md = '# Node Pack QA Checklist\n\n' + lines.join('\n')
     this._download(md, filename)
     return md
   },
 
   async detailedChecklist(filename = 'checklist-detailed.md') {
     await this._init()
-    const sections = Object.keys(this._byMod).sort().map(mod => {
-      const nodes = this._byMod[mod].map(n =>
-        `- [ ] ${n.display_name || n.name}${n.deprecated ? " ~~DEPRECATED~~" : ""}`
-      )
-      return `## ${mod}\n\n${nodes.join("\n")}`
-    })
-    const md = "# Node Pack QA Checklist\n\n" + sections.join("\n\n")
+    const sections = Object.keys(this._byMod)
+      .sort()
+      .map((mod) => {
+        const nodes = this._byMod[mod].map(
+          (n) => `- [ ] ${n.display_name || n.name}${n.deprecated ? ' ~~DEPRECATED~~' : ''}`
+        )
+        return `## ${mod}\n\n${nodes.join('\n')}`
+      })
+    const md = '# Node Pack QA Checklist\n\n' + sections.join('\n\n')
     this._download(md, filename)
     return md
   },
@@ -64,13 +66,20 @@ const QA = {
   async addPack(mod, opts = {}) {
     await this._init()
     const { cols = 5, spacing = [400, 300], skip = [] } = opts
-    const nodes = (this._byMod[mod] || []).filter(n => !skip.includes(n.name) && !n.deprecated)
+    const nodes = (this._byMod[mod] || []).filter((n) => !skip.includes(n.name) && !n.deprecated)
 
-    return nodes.map((def, i) => {
-      try {
-        return this.addNode(def.name, [100 + (i % cols) * spacing[0], 100 + Math.floor(i / cols) * spacing[1]])
-      } catch { return null }
-    }).filter(Boolean)
+    return nodes
+      .map((def, i) => {
+        try {
+          return this.addNode(def.name, [
+            100 + (i % cols) * spacing[0],
+            100 + Math.floor(i / cols) * spacing[1]
+          ])
+        } catch {
+          return null
+        }
+      })
+      .filter(Boolean)
   },
 
   _download(content, filename, type = 'text/plain') {
@@ -90,7 +99,7 @@ const QA = {
     app.graph.clear()
     const nodes = await this.addPack(mod, opts)
     if (!nodes.length) return []
-    await new Promise(r => setTimeout(r, 300))
+    await new Promise((r) => setTimeout(r, 300))
     const filename = `all-nodes-${mod.replace(/[^a-z0-9_-]/gi, '_')}`
     if (opts.save !== false) await this.save(filename)
     return nodes
@@ -99,7 +108,7 @@ const QA = {
   async testPacks(mods, opts = {}) {
     for (const mod of mods) {
       await this.testPack(mod, opts)
-      await new Promise(r => setTimeout(r, 1000))
+      await new Promise((r) => setTimeout(r, 1000))
     }
   },
 
@@ -108,7 +117,7 @@ const QA = {
     const mods = Object.keys(this._byMod).sort()
     for (const mod of mods) {
       await this.testPack(mod, opts)
-      await new Promise(r => setTimeout(r, 1000))
+      await new Promise((r) => setTimeout(r, 1000))
     }
   },
 

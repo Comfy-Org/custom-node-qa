@@ -1,28 +1,35 @@
 # ComfyUI Custom Node QA
 
-Tools and artifacts for QA testing custom nodes on ComfyUI Cloud.
+Tools for batch testing custom nodes on ComfyUI Cloud.
 
 ## Scripts
 
-`scripts/qa.js` - Browser devtools utilities for batch testing node packs.
+`scripts/devtools-node-pack-tester.js` - copy/paste into browser devtools console:
 
-Usage: paste into browser console, then:
 ```js
-await QA.listPacks()                    // list all packs
-await QA.checklist()                    // markdown checklist -> clipboard
-await QA.testPack("comfyui-impact-pack") // clear, add all nodes, save
-await QA.testAllPacks()                 // test every pack
-QA.help()                               // full command list
+// 1. Open ComfyUI in browser
+// 2. Open devtools (F12)
+// 3. Paste entire script contents into console
+// 4. Run commands:
+
+await QA.listPacks() // list all packs
+await QA.checklist() // download markdown checklist
+await QA.testPack('comfyui-impact-pack') // clear, add all nodes, save
+await QA.testAllPacks() // test every pack
+QA.help() // full command list
 ```
 
-## Workflows
+## Structure
 
-`workflows/` contains saved workflow files with all nodes from each pack. Naming: `all-nodes-{pack-name}.json`
+- `scripts/` - devtools scripts (paste into browser console)
+- `workflows/` - saved workflow files (`all-nodes-{pack}.json`)
+- `checklists/` - generated QA checklists
 
-## Results
+## Development
 
-`results/` - store QA session results here. Copy `CHECKLIST_TEMPLATE.md` to `results/YYYY-MM-DD.md` for each session.
-
-## Adding new scripts
-
-Add new devtools scripts to `scripts/`. Keep them self-contained and paste-able into browser console.
+```sh
+npm install
+npm run format        # format all files
+npm run format:check  # check formatting
+npm run validate:json # validate workflow files
+```
